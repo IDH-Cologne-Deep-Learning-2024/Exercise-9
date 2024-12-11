@@ -54,45 +54,45 @@ tokenized_X_test = pad_sequences(tokenized_X_test, maxlen=MAX_LENGTH, padding="p
 #     print(test)
 
 
-# FFNN macro avg F1: 0.59 weighted avg: 0.62: --> Actually best result with current settings
+# FFNN macro avg F1: 0.59 weighted avg F1: 0.62: --> Actually best result with current settings
+# model = Sequential()
+# model.add(Input(shape=(MAX_LENGTH,)))
+# model.add(Embedding(vocab_size, 150, input_length=MAX_LENGTH))
+# model.add(Flatten())
+# # Added Regularizers
+# model.add(Dense(100, activation="relu", kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
+#                 activity_regularizer=L2(1e-5)))
+# model.add(Dense(100, activation="relu", kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L1(1e-4),
+#                 activity_regularizer=L2(1e-5)))
+# model.add(Dense(number_classes, activation="softmax"))
+# # Changed optimizer to Adam
+# model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.01))
+# model.summary()
+
+# UNIDIRECTIONAL RNN: macro avg F1: 0.57 weighted avg F1: 0.60 --> Worst with current settings somehow
+# model = Sequential()
+# model.add(Input(shape=(MAX_LENGTH,)))
+# model.add(Embedding(vocab_size, 150, input_length=MAX_LENGTH))
+# model.add(SimpleRNN(64, activation="relu", dropout=0.3, recurrent_dropout=0.3,
+#                     return_sequences=True, kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
+#                     activity_regularizer=L1(1e-5), recurrent_regularizer=L1L2(l1=1e-5, l2=1e-4)))
+# model.add(Flatten())
+# model.add(Dense(number_classes, activation="softmax"))
+# model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.001))
+# model.summary()
+
+# BIDIRECTIONAL RNN: macro avg F1: 0.58 weighted avg F1: 0.60 --> Slightly better than unidir
 model = Sequential()
 model.add(Input(shape=(MAX_LENGTH,)))
 model.add(Embedding(vocab_size, 150, input_length=MAX_LENGTH))
+model.add(SimpleRNN(64, activation="relu", dropout=0.3, recurrent_dropout=0.3,
+                    return_sequences=True, kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
+                    activity_regularizer=L1(1e-5), recurrent_regularizer=L1L2(l1=1e-5, l2=1e-4)))
+model.add(Bidirectional(SimpleRNN(64)))
 model.add(Flatten())
-# Added Regularizers
-model.add(Dense(100, activation="relu", kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
-                activity_regularizer=L2(1e-5)))
-model.add(Dense(100, activation="relu", kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L1(1e-4),
-                activity_regularizer=L2(1e-5)))
 model.add(Dense(number_classes, activation="softmax"))
-# Changed optimizer to Adam
-model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.01))
+model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.001))
 model.summary()
-
-# UNIDIRECTIONAL RNN: macro avg F1: 0.57 weighted avg: 0.60 --> Worst with current settings somehow
-# model = Sequential()
-# model.add(Input(shape=(MAX_LENGTH,)))
-# model.add(Embedding(vocab_size, 150, input_length=MAX_LENGTH))
-# model.add(SimpleRNN(64, activation="relu", dropout=0.3, recurrent_dropout=0.3,
-#                     return_sequences=True, kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
-#                     activity_regularizer=L1(1e-5), recurrent_regularizer=L1L2(l1=1e-5, l2=1e-4)))
-# model.add(Flatten())
-# model.add(Dense(number_classes, activation="softmax"))
-# model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.001))
-# model.summary()
-
-# BIDIRECTIONAL RNN: macro avg F1: 0.58 weighted avg: 0.60 --> Slightly better than unidir
-# model = Sequential()
-# model.add(Input(shape=(MAX_LENGTH,)))
-# model.add(Embedding(vocab_size, 150, input_length=MAX_LENGTH))
-# model.add(SimpleRNN(64, activation="relu", dropout=0.3, recurrent_dropout=0.3,
-#                     return_sequences=True, kernel_regularizer=L1L2(l1=1e-5, l2=1e-4), bias_regularizer=L2(1e-4),
-#                     activity_regularizer=L1(1e-5), recurrent_regularizer=L1L2(l1=1e-5, l2=1e-4)))
-# model.add(Bidirectional(SimpleRNN(64)))
-# model.add(Flatten())
-# model.add(Dense(number_classes, activation="softmax"))
-# model.compile(loss="crossentropy", optimizer=Adam(learning_rate=0.001))
-# model.summary()
 
 # without that numpy conversion I always get an error and the model isn't working at all:
 tokenized_X_train = np.array(tokenized_X_train)
