@@ -12,8 +12,6 @@ import os
 
 # RNN + BiRNN to predict origin of name; 80 train 20 test 
 # adapt tokenizer  for char; char pred in sequence s p9f 
-# compare with ffnn
-#Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -50,7 +48,8 @@ tokenized_X_test = tokenizer.texts_to_sequences(X_test)
 MAX_LENGTH = max(len(tokenized_text) for tokenized_text in tokenized_X_train)
 tokenized_X_train = pad_sequences(tokenized_X_train, maxlen=MAX_LENGTH, padding="post")
 tokenized_X_test = pad_sequences(tokenized_X_test, maxlen=MAX_LENGTH, padding="post")
-# val_split issuuuuues
+
+# regarding val_split 
 tokenized_X_train = np.array(tokenized_X_train)
 y_train = np.array(to_number(y_train))
 y_test = np.array(to_number(y_test))
@@ -69,4 +68,4 @@ model.fit(tokenized_X_train, y_train, validation_split=0.1, epochs=50, verbose=1
 
 y_pred = model.predict(tokenized_X_test)
 y_pred = y_pred.argmax(axis=1)
-print(classification_report(y_test, y_pred, zero_division=0))
+print(classification_report(y_test, y_pred, zero_division=0)) 
