@@ -81,11 +81,9 @@ print(classification_report(y_test, y_pred))
 
 #FFNN
 #My FFNN crashes on the fit function because of a dimension difference i cant solve.
-#The FFNN model sadly still crashes. The max_length seems to be wrong.
-#max_length = max([len(name) for name in X_train])
+#The FFNN model sadly still crashes. Maybe the max_length is wrong.
 
 FFNN = Sequential([
-    Input(shape=(max_length,)),
     Embedding(input_dim=vocab_size, output_dim=100, input_length=max_length),
     Dense(128, activation="tanh"),
     Dropout(0.5),
